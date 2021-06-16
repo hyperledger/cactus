@@ -168,10 +168,6 @@ export class PluginLedgerConnectorCorda
     return Optional.ofNullable(this.httpServer);
   }
 
-  public async shutdown(): Promise<void> {
-    return;
-  }
-
   public async getFlowList(): Promise<string[]> {
     return ["getFlowList()_NOT_IMPLEMENTED"];
   }
