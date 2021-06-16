@@ -321,7 +321,7 @@ export class ApiServer {
     }
   }
 
-  public async shutdown?(): Promise<void> {
+  public async shutdown(): Promise<void> {
     this.log.info(`Shutting down API server ...`);
 
     if (this.httpServerApi?.listening) {
