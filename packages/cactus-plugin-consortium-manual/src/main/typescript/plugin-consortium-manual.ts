@@ -1,9 +1,7 @@
 import { Server } from "http";
 import { Server as SecureServer } from "https";
 import { Optional } from "typescript-optional";
-import { promisify } from "util";
 import express, { Express } from "express";
-import bodyParser from "body-parser";
 import { JWS, JWK } from "jose";
 import jsonStableStringify from "json-stable-stringify";
 import { v4 as uuidv4 } from "uuid";
@@ -124,44 +122,10 @@ export class PluginConsortiumManual
     this.prometheusExporter.setNodeCount(consortiumRepo.allNodes.length);
   }
 
-  public async shutdown(): Promise<void> {
-    this.log.info(`Shutting down...`);
-    const serverMaybe = this.getHttpServer();
-    if (serverMaybe.isPresent()) {
-      this.log.info(`Awaiting server.close() ...`);
-      const server = serverMaybe.get();
-      await promisify(server.close.bind(server))();
-      this.log.info(`server.close() OK`);
-    } else {
-      this.log.info(`No HTTP server found, skipping...`);
-    }
-  }
-
   public async registerWebServices(
     app: Express,
   ): Promise<IWebServiceEndpoint[]> {
     const webApp: Express = this.options.webAppOptions ? express() : app;
-
-    if (this.options.webAppOptions) {
-      this.log.info(`Creating dedicated HTTP server...`);
-      const { port, hostname } = this.options.webAppOptions;
-
-      webApp.use(bodyParser.json({ limit: "50mb" }));
-
-      const address = await new Promise((resolve, reject) => {
-        const httpServer = webApp.listen(port, hostname, (err?: any) => {
-          if (err) {
-            reject(err);
-            this.log.error(`Failed to create dedicated HTTP server`, err);
-          } else {
-            this.httpServer = httpServer;
-            const theAddress = this.httpServer.address();
-            resolve(theAddress);
-          }
-        });
-      });
-      this.log.info(`Creation of HTTP server OK`, { address });
-    }
 
     const webServices = await this.getOrCreateWebServices();
     webServices.forEach((ws) => ws.registerExpress(webApp));

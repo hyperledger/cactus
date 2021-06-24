@@ -2,7 +2,6 @@ import { Server } from "http";
 import { Server as SecureServer } from "https";
 
 import { Express } from "express";
-import { promisify } from "util";
 import { Optional } from "typescript-optional";
 import Web3 from "web3";
 // The strange way of obtaining the contract class here is like this because
@@ -139,14 +138,6 @@ export class PluginLedgerConnectorQuorum
 
   public getHttpServer(): Optional<Server | SecureServer> {
     return Optional.ofNullable(this.httpServer);
-  }
-
-  public async shutdown(): Promise<void> {
-    const serverMaybe = this.getHttpServer();
-    if (serverMaybe.isPresent()) {
-      const server = serverMaybe.get();
-      await promisify(server.close.bind(server))();
-    }
   }
 
   async registerWebServices(app: Express): Promise<IWebServiceEndpoint[]> {

@@ -178,10 +178,6 @@ export class PluginKeychainVault implements ICactusPlugin, IPluginWebService {
     return Optional.empty();
   }
 
-  public async shutdown(): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-
   public getInstanceId(): string {
     return this.instanceId;
   }

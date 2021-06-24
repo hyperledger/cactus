@@ -70,9 +70,6 @@ export class PluginHtlcEthBesuErc20
   /**
    * Feature is deprecated, we won't need this method in the future.
    */
-  public async shutdown(): Promise<void> {
-    return;
-  }
 
   public getInstanceId(): string {
     return this.instanceId;

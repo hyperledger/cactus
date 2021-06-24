@@ -172,10 +172,6 @@ export class PluginLedgerConnectorFabric
     this.prometheusExporter.startMetricsCollection();
   }
 
-  public async shutdown(): Promise<void> {
-    return;
-  }
-
   public getPrometheusExporter(): PrometheusExporter {
     return this.prometheusExporter;
   }

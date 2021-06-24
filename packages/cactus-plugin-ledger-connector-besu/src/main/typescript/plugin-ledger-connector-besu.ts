@@ -4,7 +4,6 @@ import { Server as SecureServer } from "https";
 import type { Server as SocketIoServer } from "socket.io";
 import type { Socket as SocketIoSocket } from "socket.io";
 import type { Express } from "express";
-import { promisify } from "util";
 import { Optional } from "typescript-optional";
 import Web3 from "web3";
 import { AbiItem } from "web3-utils";
@@ -157,14 +156,6 @@ export class PluginLedgerConnectorBesu
 
   public getHttpServer(): Optional<Server | SecureServer> {
     return Optional.ofNullable(this.httpServer);
-  }
-
-  public async shutdown(): Promise<void> {
-    const serverMaybe = this.getHttpServer();
-    if (serverMaybe.isPresent()) {
-      const server = serverMaybe.get();
-      await promisify(server.close.bind(server))();
-    }
   }
 
   async registerWebServices(

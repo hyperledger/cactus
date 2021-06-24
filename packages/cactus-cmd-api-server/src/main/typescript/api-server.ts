@@ -324,19 +324,6 @@ export class ApiServer {
   public async shutdown(): Promise<void> {
     this.log.info(`Shutting down API server ...`);
 
-    const registry = await this.getOrInitPluginRegistry();
-
-    const webServicesShutdown = registry
-      .getPlugins()
-      .filter((pluginInstance) => isIPluginWebService(pluginInstance))
-      .map((pluginInstance: ICactusPlugin) => {
-        return (pluginInstance as IPluginWebService).shutdown();
-      });
-
-    this.log.info(`Stopping ${webServicesShutdown.length} WS plugin(s)...`);
-    await Promise.all(webServicesShutdown);
-    this.log.info(`Stopped ${webServicesShutdown.length} WS plugin(s) OK`);
-
     if (this.httpServerApi?.listening) {
       this.log.info(`Closing HTTP server of the API...`);
       await Servers.shutdown(this.httpServerApi);
