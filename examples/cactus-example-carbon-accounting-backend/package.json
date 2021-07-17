@@ -7,14 +7,14 @@
   "browser": "dist/cactus-example-carbon-accounting-backend.web.umd.js",
   "browserMinified": "dist/cactus-example-carbon-accounting-backend.web.umd.min.js",
   "module": "dist/lib/main/typescript/index.js",
-  "types": "dist/types/main/typescript/index.d.ts",
+  "types": "dist/lib/main/typescript/index.d.ts",
   "files": [
     "dist/*"
   ],
   "bin": "./dist/lib/main/typescript/carbon-accounting-app-cli.js",
   "scripts": {
     "tsc": "tsc --project ./tsconfig.json",
-    "start" : "CONFIG_FILE=./example-config.json node dist/lib/main/typescript/carbon-accounting-app-cli.js",
+    "start": "CONFIG_FILE=./example-config.json node dist/lib/main/typescript/carbon-accounting-app-cli.js",
     "solidity": "hardhat compile",
     "pretsc": "npm run solidity",
     "watch": "npm-watch",
