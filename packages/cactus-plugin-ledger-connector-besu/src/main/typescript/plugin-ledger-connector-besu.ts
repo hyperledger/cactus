@@ -669,20 +669,19 @@ export class PluginLedgerConnectorBesu
             abi: AbiItem[];
             networks: unknown;
           };
-          const contractJSON = await keychainPlugin.get<SolcJson>(contractName);
-
-          this.log.debug("Contract JSON: \n%o", JSON.stringify(contractJSON));
+          const contractJSON = await keychainPlugin.get<string>(contractName);
+          const constractObject: SolcJson = JSON.parse(contractJSON);
 
           const contract = new this.web3.eth.Contract(
-            contractJSON.abi,
+            constractObject.abi,
             contractAddress,
           );
           this.contracts[contractName] = contract;
 
           const network = { [networkId]: networkInfo };
-          contractJSON.networks = network;
+          constractObject.networks = network;
 
-          keychainPlugin.set(contractName, contractJSON);
+          keychainPlugin.set(contractName, JSON.stringify(constractObject));
         }
       } else {
         throw new Error(

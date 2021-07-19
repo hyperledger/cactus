@@ -82,7 +82,10 @@ test(testCase, async (t: Test) => {
     backend: new Map([[DemoHelperJSON.contractName, DemoHelperJSON]]),
     logLevel,
   });
-  keychainPlugin.set(HashTimeLockJson.contractName, HashTimeLockJson);
+  keychainPlugin.set(
+    HashTimeLockJson.contractName,
+    JSON.stringify(HashTimeLockJson),
+  );
 
   const factory = new PluginFactoryLedgerConnector({
     pluginImportType: PluginImportType.Local,
