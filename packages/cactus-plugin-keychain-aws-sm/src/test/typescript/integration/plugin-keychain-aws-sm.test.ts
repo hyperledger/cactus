@@ -20,6 +20,7 @@ import {
 import fs from "fs";
 import path from "path";
 import os from "os";
+import { PluginRegistry } from "../../../../../cactus-core/dist/types/main/typescript/plugin-registry";
 
 const logLevel: LogLevelDesc = "TRACE";
 
@@ -56,6 +57,9 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     const options1: IPluginKeychainAwsSmOptions = {
       instanceId: uuidv4(),
       keychainId: uuidv4(),
+      rpcApiHttpHost: "fake",
+      rpcApiWsHost: "fake",
+      pluginRegistry: new PluginRegistry({}),
       awsEndpoint: localstackHost,
       awsRegion: "us-east-1",
       awsProfile: "default",
@@ -105,6 +109,9 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     const options2: IPluginKeychainAwsSmOptions = {
       instanceId: uuidv4(),
       keychainId: uuidv4(),
+      rpcApiHttpHost: "fake",
+      rpcApiWsHost: "fake",
+      pluginRegistry: new PluginRegistry({}),
       awsEndpoint: localstackHost,
       awsRegion: "us-east-1",
       awsProfile: "default",

@@ -23,6 +23,7 @@ export interface IPluginKeychainAwsSmRemoteAdapterOptions
   extends ICactusPluginOptions {
   backend: DefaultApi;
   keychainId: string;
+  instanceId: string;
   logLevel?: LogLevelDesc;
 }
 

@@ -364,7 +364,7 @@
                 ],
                 "properties": {
                     "id": {
-                        "$ref": "PluginInstanceId"
+                        "$ref": "#/components/schemas/PluginInstanceId"
                     },
                     "packageName": {
                         "type": "string",
@@ -422,6 +422,21 @@
                 }
             },
             "GetKeychainEntryRequest": {
+                "type": "object",
+                "required": [
+                    "key"
+                ],
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The key for the entry to get from the keychain.",
+                        "minLength": 1,
+                        "maxLength": 1024,
+                        "nullable": false
+                    }
+                }
+            },
+            "DeleteKeychainEntryRequest": {
                 "type": "object",
                 "required": [
                     "key"
@@ -496,6 +511,21 @@
                         "nullable": false
                     }
                 }
+            }, 
+            "DeleteKeychainEntryResponse": {
+                "type": "object",
+                "required": [
+                    "key"
+                ],
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The key that was used to set the value on the keychain.",
+                        "minLength": 1,
+                        "maxLength": 1024,
+                        "nullable": false
+                    }
+                }
             }
         },
         "requestBodies": {
@@ -517,6 +547,17 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/SetKeychainEntryRequest"
+                        }
+                    }
+                }
+            }, 
+            "keychain_delete_entry_request_body": {
+                "description": "Request body to delete a keychain entry via its key",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/DeleteKeychainEntryRequest"
                         }
                     }
                 }
@@ -562,6 +603,25 @@
                 "description": "Authorization information is missing or invalid."
             },
             "keychain_set_entry_500": {
+                "description": "Unexpected error."
+            },
+            "keychain_delete_entry_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                       "schema": {
+                          "$ref": "#/components/schemas/DeleteKeychainEntryResponse"
+                       }
+                    }
+                 }
+            },
+            "keychain_delete_entry_400": {
+                "description": "Bad request. Key must be a string and longer than 0, shorter than 1024 characters."
+            },
+            "keychain_delete_entry_401": {
+                "description": "Authorization information is missing or invalid."
+            },
+            "keychain_delete_entry_500": {
                 "description": "Unexpected error."
             }
         }

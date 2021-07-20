@@ -17,21 +17,21 @@ import { registerWebServiceEndpoint } from "@hyperledger/cactus-core";
 import OAS from "../../json/openapi.json";
 import { PluginKeychainAwsSm } from "../plugin-keychain-aws-sm";
 
-export interface IGetKeychainEntryEndpointOptions {
+export interface ISetKeychainEntryEndpointOptions {
   logLevel?: LogLevelDesc;
   connector: PluginKeychainAwsSm;
 }
 
-export class GetKeychainEntryEndpoint implements IWebServiceEndpoint {
-  public static readonly CLASS_NAME = "GetKeychainEntryEndpoint";
+export class SetKeychainEntryEndpoint implements IWebServiceEndpoint {
+  public static readonly CLASS_NAME = "SetKeychainEntryEndpoint";
 
   private readonly log: Logger;
 
   public get className(): string {
-    return GetKeychainEntryEndpoint.CLASS_NAME;
+    return SetKeychainEntryEndpoint.CLASS_NAME;
   }
 
-  constructor(public readonly options: IGetKeychainEntryEndpointOptions) {
+  constructor(public readonly options: ISetKeychainEntryEndpointOptions) {
     const fnTag = `${this.className}#constructor()`;
     Checks.truthy(options, `${fnTag} arg options`);
     Checks.truthy(options.connector, `${fnTag} arg options.connector`);
@@ -43,7 +43,7 @@ export class GetKeychainEntryEndpoint implements IWebServiceEndpoint {
 
   public getOasPath() {
     return OAS.paths[
-      "/api/v1/plugins/@hyperledger/cactus-plugin-keychain-aws-sm/get-keychain-entry"
+      "/api/v1/plugins/@hyperledger/cactus-plugin-keychain-aws-sm/set-keychain-entry"
     ];
   }
 
@@ -87,7 +87,10 @@ export class GetKeychainEntryEndpoint implements IWebServiceEndpoint {
     this.log.debug(reqTag);
     const reqBody = req.body;
     try {
-      const resBody = await this.options.connector.get(reqBody.key);
+      const resBody = await this.options.connector.set(
+        reqBody.key,
+        reqBody.value,
+      );
       res.json(resBody);
     } catch (ex) {
       this.log.error(`Crash while serving ${reqTag}`, ex);

@@ -20,22 +20,26 @@ import {
 
 import {
   BesuTestLedger,
+  Containers,
+  K_DEFAULT_LOCALSTACK_HTTP_PORT,
+  LocalStackContainer,
   pruneDockerAllIfGithubAction,
 } from "@hyperledger/cactus-test-tooling";
 
-import {
-  BesuApiClientOptions,
-  BesuApiClient,
-  IPluginLedgerConnectorBesuOptions,
-  PluginLedgerConnectorBesu,
-  GetBalanceV1Request,
-} from "@hyperledger/cactus-plugin-ledger-connector-besu";
+import { PluginLedgerConnectorBesu } from "@hyperledger/cactus-plugin-ledger-connector-besu";
 
 import { PluginRegistry } from "@hyperledger/cactus-core";
 
 import { PluginKeychainMemory } from "@hyperledger/cactus-plugin-keychain-memory";
+import {
+  AwsCredentialType,
+  GetKeychainEntryRequest,
+  IPluginKeychainAwsSmOptions,
+  PluginKeychainAwsSm,
+} from "../../../main/typescript";
+import { GetKeychainEntryResponse } from "../../../../../cactus-core-api/dist/types/main/typescript/public-api";
 
-const testCase = "API Client can call getBalance via network";
+const testCase = "API Client can call get via network";
 const logLevel: LogLevelDesc = "TRACE";
 
 test("BEFORE " + testCase, async (t: Test) => {
@@ -45,6 +49,18 @@ test("BEFORE " + testCase, async (t: Test) => {
 });
 
 test(testCase, async (t: Test) => {
+  const localStackContainer = new LocalStackContainer({
+    logLevel: logLevel,
+  });
+  await localStackContainer.start();
+
+  const ci = await Containers.getById(localStackContainer.containerId);
+  const localstackIpAddr = await internalIpV4();
+  const hostPort = await Containers.getPublicPort(
+    K_DEFAULT_LOCALSTACK_HTTP_PORT,
+    ci,
+  );
+  const localstackHost = `http://${localstackIpAddr}:${hostPort}`;
   const keyEncoder: KeyEncoder = new KeyEncoder("secp256k1");
   const keychainId = uuidv4();
   const keychainRef = uuidv4();
@@ -80,7 +96,7 @@ test(testCase, async (t: Test) => {
   };
 
   test.onFinish(tearDown);
-  const testAccount = await besuTestLedger.createEthTestAccount();
+  //const testAccount = await besuTestLedger.createEthTestAccount();
   const rpcApiHttpHost = await besuTestLedger.getRpcApiHttpHost();
   const rpcApiWsHost = await besuTestLedger.getRpcApiWsHost();
 
@@ -88,11 +104,17 @@ test(testCase, async (t: Test) => {
   const pluginRegistry = new PluginRegistry({ plugins: [keychain] });
 
   // 3. Instantiate the web service consortium plugin
-  const options: IPluginLedgerConnectorBesuOptions = {
+  const options: IPluginKeychainAwsSmOptions = {
     instanceId: uuidv4(),
+    keychainId: uuidv4(),
     rpcApiHttpHost,
     rpcApiWsHost,
     pluginRegistry,
+    awsEndpoint: localstackHost,
+    awsRegion: "us-east-1",
+    awsProfile: "default",
+    awsCredentialType: AwsCredentialType.LocalFile,
+    awsCredentialFilePath: `tmpDirPath/credentials`,
     logLevel,
   };
   const pluginValidatorBesu = new PluginLedgerConnectorBesu(options);
@@ -155,17 +177,21 @@ test(testCase, async (t: Test) => {
   const signDataHex = Buffer.from(singData).toString("hex");
   */
 
-  const request: GetBalanceV1Request = {
-    address: testAccount.address,
+  const request: GetKeychainEntryRequest = {
+    key: "whatswefsd",
+    //What is the key for the test
   };
 
-  const configuration = new BesuApiClientOptions({ basePath: node1Host });
-  const api = new BesuApiClient(configuration);
+  const api = new PluginKeychainAwsSm(options);
 
   // Test for 200 valid response test case
-  const res = await api.getbalanceV1(request);
+  const res = await api.get(request.key);
   t.ok(res, "API response object is truthy");
-  t.true(typeof res.data.balance === "string", "Response is String ok");
+  t.true(
+    typeof (res as GetKeychainEntryResponse).key === "string",
+    "Response is String ok",
+  );
+  //.data.key
 });
 
 test("AFTER " + testCase, async (t: Test) => {
@@ -173,3 +199,6 @@ test("AFTER " + testCase, async (t: Test) => {
   await t.doesNotReject(pruning, "Pruning didn't throw OK");
   t.end();
 });
+function internalIpV4() {
+  throw new Error("Function not implemented.");
+}

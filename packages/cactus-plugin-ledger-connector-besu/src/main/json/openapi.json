@@ -55,7 +55,6 @@
                     }
                 }
             },
-
             "EvmTransaction":{
                 "type":"object",
                 "properties":{

@@ -18,7 +18,7 @@
         "GetSecretResponse": {
             "type": "string",
             "nullable": false
-        }
+        } 
       }
     },
     "paths": {
@@ -81,6 +81,36 @@
                 },
                 "500": {
                     "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/responses/keychain_set_entry_500"
+                    }
+                }
+            }
+        }, 
+        "/api/v1/plugins/@hyperledger/cactus-plugin-keychain-aws-sm/delete-keychain-entry": {
+            "post": {
+                "x-hyperledger-cactus": {
+                "http": {
+                    "path": "/api/v1/plugins/@hyperledger/cactus-plugin-keychain-aws-sm/delete-keychain-entry",
+                    "verbLowerCase": "post"
+                }
+                },
+                "operationId": "deleteKeychainEntry",
+                "summary": "Deletes a value under a key on the keychain backend.",
+                "parameters": [],
+                "requestBody": {
+                    "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/requestBodies/keychain_delete_entry_request_body"
+                },
+                "responses": {
+                    "200": {
+                        "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/responses/keychain_delete_entry_200"
+                    },
+                    "400": {
+                        "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/responses/keychain_delete_entry_400"
+                    },
+                    "401": {
+                        "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/responses/keychain_delete_entry_401"
+                    },
+                    "500": {
+                        "$ref": "../../../../cactus-core-api/src/main/json/openapi.json#/components/responses/keychain_delete_entry_500"
                     }
                 }
             }

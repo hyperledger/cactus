@@ -26,6 +26,7 @@ import {
 } from "@hyperledger/cactus-core-api";
 
 import { homedir } from "os";
+import { PluginRegistry } from "../../../../cactus-core/dist/types/main/typescript/plugin-registry";
 
 export enum AwsCredentialType {
   LocalFile = "LOCAL_FILE",
@@ -33,6 +34,10 @@ export enum AwsCredentialType {
 }
 
 export interface IPluginKeychainAwsSmOptions extends ICactusPluginOptions {
+  instanceId: string;
+  rpcApiHttpHost: string;
+  rpcApiWsHost: string;
+  pluginRegistry: PluginRegistry;
   logLevel?: LogLevelDesc;
   keychainId: string;
   awsProfile: string;
@@ -194,7 +199,9 @@ export class PluginKeychainAwsSm
     return null as any;
   }
 
-  async get<T>(key: string): Promise<T> {
+  public async get<GetKeychainEntryResponse>(
+    key: string,
+  ): Promise<GetKeychainEntryResponse> {
     const fnTag = `${this.className}#get(key: string)`;
     const awsClient = this.getAwsClient();
     try {
@@ -215,7 +222,7 @@ export class PluginKeychainAwsSm
         SECRETMANAGER_STATUS_KEY_NOT_FOUND,
       );
       if (errorStatus) {
-        return (null as unknown) as T;
+        return (null as unknown) as GetKeychainEntryResponse;
       } else {
         this.log.error(`Error retriving secret value for the key "${key}"`);
         throw ex;
