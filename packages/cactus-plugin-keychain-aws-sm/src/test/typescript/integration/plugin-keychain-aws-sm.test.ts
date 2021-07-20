@@ -1,6 +1,13 @@
 import test, { Test } from "tape-promise/tape";
-import { v4 as internalIpV4 } from "internal-ip";
 
+import express from "express";
+import bodyParser from "body-parser";
+import http from "http";
+import { AddressInfo } from "net";
+
+import { IListenOptions, Servers } from "@hyperledger/cactus-common";
+
+import { v4 as internalIpV4 } from "internal-ip";
 import {
   Containers,
   LocalStackContainer,
@@ -17,10 +24,15 @@ import {
   AwsCredentialType,
 } from "../../../main/typescript/public-api";
 
+import {
+  DefaultApi as KeychainAwsSmApi,
+  Configuration,
+} from "../../../main/typescript/generated/openapi/typescript-axios/index";
+
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { PluginRegistry } from "../../../../../cactus-core/dist/types/main/typescript/plugin-registry";
+import { PluginRegistry } from "@hyperledger/cactus-core";
 
 const logLevel: LogLevelDesc = "TRACE";
 
@@ -57,8 +69,6 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     const options1: IPluginKeychainAwsSmOptions = {
       instanceId: uuidv4(),
       keychainId: uuidv4(),
-      rpcApiHttpHost: "fake",
-      rpcApiWsHost: "fake",
       pluginRegistry: new PluginRegistry({}),
       awsEndpoint: localstackHost,
       awsRegion: "us-east-1",
@@ -68,6 +78,23 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
       logLevel: logLevel,
     };
     const plugin1 = new PluginKeychainAwsSm(options1);
+
+    const expressApp = express();
+    expressApp.use(bodyParser.json({ limit: "250mb" }));
+    const server = http.createServer(expressApp);
+    const listenOptions: IListenOptions = {
+      hostname: "0.0.0.0",
+      port: 0,
+      server,
+    };
+    const addressInfo = (await Servers.listen(listenOptions)) as AddressInfo;
+    test.onFinish(async () => await Servers.shutdown(server));
+    const { address, port } = addressInfo;
+    const apiHost = `http://${address}:${port}`;
+    const config = new Configuration({ basePath: apiHost });
+    const apiClient = new KeychainAwsSmApi(config);
+
+    await plugin1.registerWebServices(expressApp);
 
     t.equal(plugin1.getKeychainId(), options1.keychainId, "Keychain ID set OK");
     t.equal(plugin1.getInstanceId(), options1.instanceId, "Instance ID set OK");
@@ -79,7 +106,12 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
 
     t.false(hasPrior1, "hasPrior1 === false OK");
 
-    await plugin1.set(key1, value1);
+    // await plugin1.set(key1, value1);
+
+    await apiClient.setKeychainEntry({
+      key: key1,
+      value: value1,
+    });
 
     const hasAfter1 = await plugin1.has(key1);
     t.true(hasAfter1, "hasAfter1 === true OK");
@@ -109,8 +141,6 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     const options2: IPluginKeychainAwsSmOptions = {
       instanceId: uuidv4(),
       keychainId: uuidv4(),
-      rpcApiHttpHost: "fake",
-      rpcApiWsHost: "fake",
       pluginRegistry: new PluginRegistry({}),
       awsEndpoint: localstackHost,
       awsRegion: "us-east-1",

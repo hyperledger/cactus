@@ -1,5 +1,6 @@
 import test, { Test } from "tape-promise/tape";
 
+import { v4 as internalIpV4 } from "internal-ip";
 import { v4 as uuidv4 } from "uuid";
 import { createServer } from "http";
 import KeyEncoder from "key-encoder";
@@ -199,6 +200,3 @@ test("AFTER " + testCase, async (t: Test) => {
   await t.doesNotReject(pruning, "Pruning didn't throw OK");
   t.end();
 });
-function internalIpV4() {
-  throw new Error("Function not implemented.");
-}

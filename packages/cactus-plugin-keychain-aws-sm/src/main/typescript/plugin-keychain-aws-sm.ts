@@ -27,6 +27,7 @@ import {
 
 import { homedir } from "os";
 import { PluginRegistry } from "../../../../cactus-core/dist/types/main/typescript/plugin-registry";
+import { SetKeychainEntryV1Endpoint } from "./webservices/set-keychain-entry-endpoint-v1";
 
 export enum AwsCredentialType {
   LocalFile = "LOCAL_FILE",
@@ -35,8 +36,6 @@ export enum AwsCredentialType {
 
 export interface IPluginKeychainAwsSmOptions extends ICactusPluginOptions {
   instanceId: string;
-  rpcApiHttpHost: string;
-  rpcApiWsHost: string;
   pluginRegistry: PluginRegistry;
   logLevel?: LogLevelDesc;
   keychainId: string;
@@ -160,7 +159,12 @@ export class PluginKeychainAwsSm
     if (Array.isArray(this.endpoints)) {
       return this.endpoints;
     }
-    const endpoints: IWebServiceEndpoint[] = [];
+    const endpoints: IWebServiceEndpoint[] = [
+      new SetKeychainEntryV1Endpoint({
+        connector: this,
+        logLevel: this.opts.logLevel,
+      }),
+    ];
 
     this.endpoints = endpoints;
 
