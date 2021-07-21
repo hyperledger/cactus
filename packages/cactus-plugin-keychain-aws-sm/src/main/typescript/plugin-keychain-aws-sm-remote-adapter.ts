@@ -28,7 +28,7 @@ export interface IPluginKeychainAwsSmRemoteAdapterOptions
 }
 
 /**
- * Class responsible for ecapsulating an API client object and then acting as
+ * Class responsible for encapsulating an API client object and then acting as
  * an adapter (ta-da) between said API client object and the calling code to
  * which it is (should be) transparent whether it is talking to an in-process
  * plugin instance of the keychain plugin or an adapter backed by an API client
@@ -127,7 +127,7 @@ export class PluginKeychainAwsSmRemoteAdapter
   public async get<T>(key: string): Promise<T> {
     const { data } = await this.backend.getKeychainEntry({ key });
     // FIXME what to do here? Does it make any sense to have the get() method
-    // of the keychain be generically parameterizable when we know we can only
+    // of the keychain be generically parameterizeable when we know we can only
     // return a string anyway?
     return data.value as any;
   }

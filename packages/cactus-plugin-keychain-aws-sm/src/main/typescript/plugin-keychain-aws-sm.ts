@@ -53,12 +53,12 @@ export interface IPluginKeychainAwsSmOptions extends ICactusPluginOptions {
    */
   awsCredentialFilePath?: string;
   /*
-   *   awsAccessKeyId field optional and neccessary only when
+   *   awsAccessKeyId field optional and necessary only when
    *   awsCredentialType == AwsCredentialType.InMemory
    */
   awsAccessKeyId?: string;
   /*
-   *   awsSecretAccessKey field optional and neccessary only when
+   *   awsSecretAccessKey field optional and necessary only when
    *   awsCredentialType == AwsCredentialType.InMemory
    */
   awsSecretAccessKey?: string;
@@ -233,7 +233,7 @@ export class PluginKeychainAwsSm
         return res.SecretString;
       } else {
         throw new Error(
-          `${fnTag}: Invalid response recieved from AWS SecretsManager. Expected "response.SecretString" property chain to be truthy`,
+          `${fnTag}: Invalid response received from AWS SecretsManager. Expected "response.SecretString" property chain to be truthy`,
         );
       }
     } catch (ex) {

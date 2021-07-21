@@ -520,7 +520,7 @@
                 "properties": {
                     "key": {
                         "type": "string",
-                        "description": "The key for the entry to set on the keychain.",
+                        "description": "The key for the entry to check on the keychain.",
                         "minLength": 1,
                         "maxLength": 1024,
                         "nullable": false
@@ -528,19 +528,7 @@
                 }
             },
             "HasKeychainEntryResponse": {
-                "type": "object",
-                "required": [
-                    "key"
-                ],
-                "properties": {
-                    "key": {
-                        "type": "string",
-                        "description": "The key that was used to set the value on the keychain.",
-                        "minLength": 1,
-                        "maxLength": 1024,
-                        "nullable": false
-                    }
-                }
+                "type": "boolean"
             }, 
             "DeleteKeychainEntryResponse": {
                 "type": "object",
@@ -550,7 +538,7 @@
                 "properties": {
                     "key": {
                         "type": "string",
-                        "description": "The key that was used to delete the value on the keychain.",
+                        "description": "The key of the entry that was deleted.",
                         "minLength": 1,
                         "maxLength": 1024,
                         "nullable": false
@@ -593,7 +581,7 @@
                 }
             }, 
             "keychain_has_entry_request_body": {
-                "description": "Request body for a keychain entry via its key",
+                "description": "Request body for checking a keychain entry via its key",
                 "required": true,
                 "content": {
                     "application/json": {
