@@ -113,6 +113,14 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
       value: value1,
     });
 
+    await apiClient.getKeychainEntry({
+      key: key1,
+    });
+
+    await apiClient.hasKeychainEntry({
+      key: key1,
+    });
+
     const hasAfter1 = await plugin1.has(key1);
     t.true(hasAfter1, "hasAfter1 === true OK");
 
@@ -120,7 +128,9 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     t.ok(valueAfter1, "valueAfter1 truthy OK");
     t.equal(valueAfter1, value1, "valueAfter1 === value OK");
 
-    await plugin1.delete(key1);
+    await apiClient.deleteKeychainEntry({
+      key: key1,
+    });
 
     const hasAfterDelete1 = await plugin1.has(key1);
     t.false(hasAfterDelete1, "hasAfterDelete1 === false OK");
@@ -152,6 +162,23 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     };
     const plugin2 = new PluginKeychainAwsSm(options2);
 
+    const expressApp = express();
+    expressApp.use(bodyParser.json({ limit: "250mb" }));
+    const server = http.createServer(expressApp);
+    const listenOptions: IListenOptions = {
+      hostname: "0.0.0.0",
+      port: 0,
+      server,
+    };
+    const addressInfo = (await Servers.listen(listenOptions)) as AddressInfo;
+    test.onFinish(async () => await Servers.shutdown(server));
+    const { address, port } = addressInfo;
+    const apiHost = `http://${address}:${port}`;
+    const config = new Configuration({ basePath: apiHost });
+    const apiClient = new KeychainAwsSmApi(config);
+
+    await plugin2.registerWebServices(expressApp);
+
     t.equal(plugin2.getKeychainId(), options2.keychainId, "Keychain ID set OK");
     t.equal(plugin2.getInstanceId(), options2.instanceId, "Instance ID set OK");
 
@@ -162,7 +189,11 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
 
     t.false(hasPrior2, "hasPrior2 === false OK");
 
-    await plugin2.set(key2, value2);
+    //await plugin2.set(key2, value2);
+    await apiClient.setKeychainEntry({
+      key: key2,
+      value: value2,
+    });
 
     const hasAfter2 = await plugin2.has(key2);
     t.true(hasAfter2, "hasAfter2 === true OK");
@@ -171,7 +202,10 @@ test("get,set,has,delete alters state as expected", async (t: Test) => {
     t.ok(valueAfter2, "valueAfter2 truthy OK");
     t.equal(valueAfter2, value2, "valueAfter2 === value OK");
 
-    await plugin2.delete(key2);
+    //await plugin2.delete(key2);
+    await apiClient.deleteKeychainEntry({
+      key: key2,
+    });
 
     const hasAfterDelete2 = await plugin2.has(key2);
     t.false(hasAfterDelete2, "hasAfterDelete2 === false OK");

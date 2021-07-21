@@ -28,6 +28,9 @@ import {
 import { homedir } from "os";
 import { PluginRegistry } from "../../../../cactus-core/dist/types/main/typescript/plugin-registry";
 import { SetKeychainEntryV1Endpoint } from "./webservices/set-keychain-entry-endpoint-v1";
+import { GetKeychainEntryV1Endpoint } from "./webservices/get-keychain-entry-endpoint-v1";
+import { DeleteKeychainEntryV1Endpoint } from "./webservices/delete-keychain-entry-endpoint-v1";
+import { HasKeychainEntryV1Endpoint } from "./webservices/has-keychain-entry-endpoint-v1";
 
 export enum AwsCredentialType {
   LocalFile = "LOCAL_FILE",
@@ -161,6 +164,18 @@ export class PluginKeychainAwsSm
     }
     const endpoints: IWebServiceEndpoint[] = [
       new SetKeychainEntryV1Endpoint({
+        connector: this,
+        logLevel: this.opts.logLevel,
+      }),
+      new GetKeychainEntryV1Endpoint({
+        connector: this,
+        logLevel: this.opts.logLevel,
+      }),
+      new DeleteKeychainEntryV1Endpoint({
+        connector: this,
+        logLevel: this.opts.logLevel,
+      }),
+      new HasKeychainEntryV1Endpoint({
         connector: this,
         logLevel: this.opts.logLevel,
       }),

@@ -22,13 +22,13 @@ export interface IDeleteKeychainEntryEndpointOptions {
   connector: PluginKeychainAwsSm;
 }
 
-export class DeleteKeychainEntryEndpoint implements IWebServiceEndpoint {
-  public static readonly CLASS_NAME = "DeleteKeychainEntryEndpoint";
+export class DeleteKeychainEntryV1Endpoint implements IWebServiceEndpoint {
+  public static readonly CLASS_NAME = "DeleteKeychainEntryV1Endpoint";
 
   private readonly log: Logger;
 
   public get className(): string {
-    return DeleteKeychainEntryEndpoint.CLASS_NAME;
+    return DeleteKeychainEntryV1Endpoint.CLASS_NAME;
   }
 
   constructor(public readonly options: IDeleteKeychainEntryEndpointOptions) {

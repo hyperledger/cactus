@@ -319,6 +319,32 @@ export interface GetKeychainEntryResponse {
 /**
  * 
  * @export
+ * @interface HasKeychainEntryRequest
+ */
+export interface HasKeychainEntryRequest {
+    /**
+     * The key for the entry to set on the keychain.
+     * @type {string}
+     * @memberof HasKeychainEntryRequest
+     */
+    key: string;
+}
+/**
+ * 
+ * @export
+ * @interface HasKeychainEntryResponse
+ */
+export interface HasKeychainEntryResponse {
+    /**
+     * The key that was used to set the value on the keychain.
+     * @type {string}
+     * @memberof HasKeychainEntryResponse
+     */
+    key: string;
+}
+/**
+ * 
+ * @export
  * @interface JWSGeneral
  */
 export interface JWSGeneral {
