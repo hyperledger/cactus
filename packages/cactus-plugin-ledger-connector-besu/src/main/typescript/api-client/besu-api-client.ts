@@ -23,6 +23,7 @@ export class BesuApiClient extends DefaultApi {
   private readonly log: Logger;
   private readonly wsApiHost: string;
   private readonly wsApiPath: string;
+  getPrometheusExporterMetricsV1: any;
 
   public get className(): string {
     return BesuApiClient.CLASS_NAME;
