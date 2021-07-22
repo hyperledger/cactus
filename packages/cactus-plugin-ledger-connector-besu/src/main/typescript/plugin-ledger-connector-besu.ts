@@ -20,6 +20,10 @@ import {
 } from "./generated/openapi/typescript-axios/index";
 
 import {
+  GetPastLogsV1Request,
+  GetPastLogsV1Response,
+} from "./generated/openapi/typescript-axios/index";
+import {
   ConsensusAlgorithmFamily,
   IPluginLedgerConnector,
   IWebServiceEndpoint,
@@ -63,9 +67,12 @@ import {
   Web3SigningCredentialCactusKeychainRef,
   Web3SigningCredentialPrivateKeyHex,
   Web3SigningCredentialType,
-} from "./generated/openapi/typescript-axios/";
+  GetTransactionV1Request,
+  GetTransactionV1Response,
+  GetBlockV1Request,
+  GetBlockV1Response,
+} from "./generated/openapi/typescript-axios";
 
-import { RunTransactionEndpoint } from "./web-services/run-transaction-endpoint";
 import { InvokeContractEndpoint } from "./web-services/invoke-contract-endpoint";
 import { isWeb3SigningCredentialNone } from "./model-type-guards";
 import { BesuSignTransactionEndpointV1 } from "./web-services/sign-transaction-endpoint-v1";
@@ -76,6 +83,11 @@ import {
 } from "./web-services/get-prometheus-exporter-metrics-endpoint-v1";
 import { WatchBlocksV1Endpoint } from "./web-services/watch-blocks-v1-endpoint";
 import { RuntimeError } from "run-time-error";
+import { GetBalanceEndpoint } from "./web-services/get-balance-endpoint";
+import { GetTransactionEndpoint } from "./web-services/get-transaction-endpoint";
+import { GetPastLogsEndpoint } from "./web-services/get-past-logs-endpoint";
+import { RunTransactionEndpoint } from "./web-services/run-transaction-endpoint";
+import { GetBlockEndpoint } from "./web-services/get-block-v1-endpoint-";
 
 export const E_KEYCHAIN_NOT_FOUND = "cactus.connector.besu.keychain_not_found";
 
@@ -173,6 +185,10 @@ export class PluginLedgerConnectorBesu
     return this.instanceId;
   }
 
+  public async onPluginInit(): Promise<unknown> {
+    return;
+  }
+
   public getHttpServer(): Optional<Server | SecureServer> {
     return Optional.ofNullable(this.httpServer);
   }
@@ -219,7 +235,35 @@ export class PluginLedgerConnectorBesu
       endpoints.push(endpoint);
     }
     {
+      const endpoint = new GetBalanceEndpoint({
+        connector: this,
+        logLevel: this.options.logLevel,
+      });
+      endpoints.push(endpoint);
+    }
+    {
+      const endpoint = new GetTransactionEndpoint({
+        connector: this,
+        logLevel: this.options.logLevel,
+      });
+      endpoints.push(endpoint);
+    }
+    {
+      const endpoint = new GetPastLogsEndpoint({
+        connector: this,
+        logLevel: this.options.logLevel,
+      });
+      endpoints.push(endpoint);
+    }
+    {
       const endpoint = new RunTransactionEndpoint({
+        connector: this,
+        logLevel: this.options.logLevel,
+      });
+      endpoints.push(endpoint);
+    }
+    {
+      const endpoint = new GetBlockEndpoint({
         connector: this,
         logLevel: this.options.logLevel,
       });
@@ -825,5 +869,28 @@ export class PluginLedgerConnectorBesu
       request.defaultBlock,
     );
     return { balance };
+  }
+
+  public async getTransaction(
+    request: GetTransactionV1Request,
+  ): Promise<GetTransactionV1Response> {
+    const transaction = await this.web3.eth.getTransaction(
+      request.transactionHash,
+    );
+    return { transaction };
+  }
+
+  public async getPastLogs(
+    request: GetPastLogsV1Request,
+  ): Promise<GetPastLogsV1Response> {
+    const logs = await this.web3.eth.getPastLogs(request);
+    return { logs };
+  }
+
+  public async getBlock(
+    request: GetBlockV1Request,
+  ): Promise<GetBlockV1Response> {
+    const block = await this.web3.eth.getBlock(request.blockHashOrBlockNumber);
+    return { block };
   }
 }
