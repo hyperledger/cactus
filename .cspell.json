@@ -90,7 +90,8 @@
         "uuidv",
         "vscc",
         "wasm",
-        "Xdai"
+        "Xdai",
+        "parameterizable"
     ],
     "dictionaries": [
         "typescript,node,npm,go,rust"
