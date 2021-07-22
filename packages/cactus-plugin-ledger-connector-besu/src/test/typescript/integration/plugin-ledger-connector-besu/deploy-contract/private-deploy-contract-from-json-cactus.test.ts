@@ -17,6 +17,9 @@ import { PluginKeychainMemory } from "@hyperledger/cactus-plugin-keychain-memory
 const testCase = "Executes private transactions on Hyperledger Besu";
 const logLevel: LogLevelDesc = "TRACE";
 
+const doctorCactusHex =
+  "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d446f63746f722043616374757300000000000000000000000000000000000000";
+
 // WARNING: the keys here are demo purposes ONLY. Please use a tool like Orchestrate or EthSigner for production, rather than hard coding private keys
 const keysStatic = {
   tessera: {
@@ -421,7 +424,32 @@ test(testCase, async (t: Test) => {
   }
 
   {
-    t.comment("Checking if member3 can call getName() via connector");
+    t.comment("Ensuring member1 can call setName() via connector");
+    const res = await connector1.invokeContract({
+      contractName: HelloWorldContractJson.contractName,
+      contractAbi: HelloWorldContractJson.abi,
+      contractAddress: contractDeployReceipt.contractAddress,
+      invocationType: EthContractInvocationType.Send,
+      gas: 3000000,
+      methodName: "setName",
+      params: ["Doctor Cactus"],
+      privateTransactionConfig: {
+        privateFrom: keys.tessera.member1.publicKey,
+        privateFor: [keys.tessera.member2.publicKey],
+      },
+      signingCredential: {
+        secret: keys.besu.member1.privateKey,
+        type: Web3SigningCredentialType.PrivateKeyHex,
+      },
+    });
+
+    t.equal(res.success, "0x1", "member1 setName callOutput === 0x1 OK");
+  }
+
+  {
+    t.comment(
+      "Ensuring member1 can call getName() and receive correct value after setName call",
+    );
     const res = await connector1.invokeContract({
       contractName: HelloWorldContractJson.contractName,
       contractAbi: HelloWorldContractJson.abi,
@@ -432,14 +460,71 @@ test(testCase, async (t: Test) => {
       params: [],
       privateTransactionConfig: {
         privateFrom: keys.tessera.member1.publicKey,
-        privateFor: [keys.tessera.member3.publicKey],
+        privateFor: [keys.tessera.member2.publicKey],
+      },
+      signingCredential: {
+        secret: keys.besu.member1.privateKey,
+        type: Web3SigningCredentialType.PrivateKeyHex,
+      },
+    });
+
+    t.equals(
+      res.callOutput,
+      doctorCactusHex,
+      "member1 getName callOutput === DoctorCactus",
+    );
+  }
+
+  {
+    t.comment(
+      "Ensuring member2 can call getName() and receive correct value after setName call",
+    );
+    const res = await connector2.invokeContract({
+      contractName: HelloWorldContractJson.contractName,
+      contractAbi: HelloWorldContractJson.abi,
+      contractAddress: contractDeployReceipt.contractAddress,
+      invocationType: EthContractInvocationType.Call,
+      gas: 3000000,
+      methodName: "getName",
+      params: [],
+      privateTransactionConfig: {
+        privateFrom: keys.tessera.member1.publicKey,
+        privateFor: [keys.tessera.member2.publicKey],
+      },
+      signingCredential: {
+        secret: keys.besu.member1.privateKey,
+        type: Web3SigningCredentialType.PrivateKeyHex,
+      },
+    });
+
+    t.equals(
+      res.callOutput,
+      doctorCactusHex,
+      "member2 getName callOutput === DoctorCactus",
+    );
+  }
+
+  {
+    t.comment("Checking if member3 can call getName() via connector");
+    const res = await connector3.invokeContract({
+      contractName: HelloWorldContractJson.contractName,
+      contractAbi: HelloWorldContractJson.abi,
+      contractAddress: contractDeployReceipt.contractAddress,
+      invocationType: EthContractInvocationType.Call,
+      gas: 3000000,
+      methodName: "getName",
+      params: [],
+      privateTransactionConfig: {
+        privateFrom: keys.tessera.member1.publicKey,
+        privateFor: [keys.tessera.member2.publicKey],
       },
       signingCredential: {
         secret: keys.besu.member3.privateKey,
         type: Web3SigningCredentialType.PrivateKeyHex,
       },
     });
-    t.ok(res, "getName() by member3 response truthy OK");
+
+    t.equal(res.callOutput, "0x", "member3 getName callOutput === 0x OK");
   }
 
   t.end();
