@@ -261,6 +261,32 @@ export enum Constants {
 /**
  * 
  * @export
+ * @interface DeleteKeychainEntryRequest
+ */
+export interface DeleteKeychainEntryRequest {
+    /**
+     * The key for the entry to delete from the keychain.
+     * @type {string}
+     * @memberof DeleteKeychainEntryRequest
+     */
+    key: string;
+}
+/**
+ * 
+ * @export
+ * @interface DeleteKeychainEntryResponse
+ */
+export interface DeleteKeychainEntryResponse {
+    /**
+     * The key of the entry that was deleted.
+     * @type {string}
+     * @memberof DeleteKeychainEntryResponse
+     */
+    key: string;
+}
+/**
+ * 
+ * @export
  * @interface GetKeychainEntryRequest
  */
 export interface GetKeychainEntryRequest {
@@ -321,6 +347,19 @@ export interface GetObjectResponseV1 {
      * @memberof GetObjectResponseV1
      */
     value: string;
+}
+/**
+ * 
+ * @export
+ * @interface HasKeychainEntryRequest
+ */
+export interface HasKeychainEntryRequest {
+    /**
+     * The key for the entry to check on the keychain.
+     * @type {string}
+     * @memberof HasKeychainEntryRequest
+     */
+    key: string;
 }
 /**
  * 
