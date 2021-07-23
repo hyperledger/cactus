@@ -55,3 +55,6 @@ site/
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+!packages/cactus-plugin-verifier-cc/src/main/typescript/ledger-plugin/*/validator/src/build
+!packages/cactus-plugin-verifier-cc/src/main/typescript/ledger-plugin/*/validator/src/core/bin

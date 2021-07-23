@@ -99,6 +99,7 @@
     "ignorePaths": [
         "node_modules/**",
         "**/build/**",
-        "**/src/main/typescript/generated/**"
+        "**/src/main/typescript/generated/**",
+        "packages/cactus-plugin-verifier-cc/**"
     ]
 }
